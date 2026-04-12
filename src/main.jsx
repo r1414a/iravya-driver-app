@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import DriverDashboard from './App.jsx'
+// import DriverDashboard from './dashboard.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
