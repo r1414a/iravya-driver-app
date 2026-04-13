@@ -403,8 +403,30 @@ export default function DriverDashboard() {
     const [simSpeed, setSimSpeed] = useState(62)
     const [nearStopId, setNearStopId] = useState(null)
     const intervalRef = useRef(null), gpsWatchRef = useRef(null), alertIdRef = useRef(100)
+    const [installPrompt, setInstallPrompt] = useState(null);
     const s = STRINGS[lang]
 
+    useEffect(() => {
+        window.addEventListener("beforeinstallprompt", (e) => {
+            e.preventDefault();
+            setInstallPrompt(e);
+            });
+        }, []);
+
+    const installApp = async () => {
+        if (!installPrompt) return;
+
+        installPrompt.prompt();
+
+        const result = await installPrompt.userChoice;
+
+        if (result.outcome === "accepted") {
+            console.log("User Installed App");
+        }
+
+        setInstallPrompt(null);
+    };
+    
     const pushAlert = (type, severity, message) => {
         alertIdRef.current++
         setDriverAlerts(prev => [{
@@ -503,6 +525,17 @@ export default function DriverDashboard() {
     if (screen === "otp") {
         return (
             <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
+                {installPrompt && (
+                <div className="mb-5 w-85 flex flex-col justify-center items-center left-4 right-4 bg-[#701a40] text-white px-4 py-2 rounded-xl shadow-xl z-50">
+                    <p className="text-sm">Install Driver App for better tracking 🚛</p>
+                    <button 
+                    className="mt-2 w-20 bg-white text-[#701a40] px-4 py-1 rounded text-sm"
+                    onClick={installApp}
+                    >
+                    Install
+                    </button>
+                </div>
+                )}
                 <div className="flex gap-2 mb-8">
                     {[["en", "EN"], ["mr", "मराठी"], ["hi", "हिंदी"]].map(([code, label]) => (
                         <button key={code} onClick={() => setLang(code)}
@@ -552,6 +585,17 @@ export default function DriverDashboard() {
     return (
         <>
             {/* Top bar — unchanged */}
+            {installPrompt && (
+                <div className="mb-5 w-85 flex flex-col justify-center items-center left-4 right-4 bg-[#701a40] text-white px-4 py-2 rounded-xl shadow-xl z-50">
+                    <p className="text-sm">Install Driver App for better tracking 🚛</p>
+                    <button 
+                    className="mt-2 w-20 bg-white text-[#701a40] px-4 py-1 rounded text-sm"
+                    onClick={installApp}
+                    >
+                    Install
+                    </button>
+                </div>
+                )}
             <div className="bg-maroon text-white px-3 sm:px-4 py-3 flex items-center justify-between shrink-0 shadow-md">
                 <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-lg shrink-0">🚛</div>
